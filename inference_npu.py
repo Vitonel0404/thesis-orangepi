@@ -256,25 +256,25 @@ if __name__ == '__main__':
         if boxes is not None:
 #            img_1 = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 #            draw(img_1, boxes, scores, classes)
-            draw(img_1, boxes, scores, classes, dw, dh)
             if float(scores[0]) >= 0.8:
-                playSound()
-                
+                draw(img_1, boxes, scores, classes, dw, dh)
+                if indicatorSound > 99 :
+
+                    playSound()
+                    indicatorSound = 0
             indicatorImgSize = False
+
+            if indicatorSound > 99 :
+                indicatorSound = 0
             
-            # show FPS in Frame
-            #cv2.putText(img_1, show_fps, (7, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (100, 255, 0), 1, cv2.LINE_AA)
-            
-            #rescale to equal original
-#            old_h, old_w = img_1.shape[:2]
-#            ratio_h, ratio_w = ratio
-#            print(old_h/ratio_h, old_w/ratio_w)
-#            img_1 = cv2.resize(img_1, (int(old_h/ratio_h), int(old_w/ratio_w)), interpolation=cv2.INTER_LINEAR)
-#            img_1 = cv2.resize(img_1, (800, 800), interpolation=cv2.INTER_LINEAR)
-            
-            # show output
+
         else:
             indicatorImgSize = True 
+
+        indicatorSound = indicatorSound + 1
+
+        if indicatorSound > 100 :
+            indicatorSound = 0  
         
         
         cv2.imshow("yolov5 post process result", img_1)
