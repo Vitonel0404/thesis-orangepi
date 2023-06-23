@@ -132,6 +132,10 @@ def open_cam_usb(dev, width, height):
 
 
 
+indicatorImgSize = True   
+indicatorSound = 0
+scale=1.0
+
 
 if __name__ == '__main__':
 
@@ -203,6 +207,26 @@ if __name__ == '__main__':
 
         ori_frame = frame
 
+        h, w = frame.shape[:2]
+
+        if indicatorImgSize is True:
+            if scale < 8.0:
+                scale += 0.01
+                top_left = (int(w * (1 - 1/scale) / 2), int(h * (1 - 1/scale) / 2))
+                top_right = (int(w * (1 + 1/scale) / 2), int(h * (1 - 1/scale) / 2))
+                bottom_left = (int(w * (1 - 1/scale) / 2), int(h * (1 + 1/scale) / 2))
+                bottom_right = (int(w * (1 + 1/scale) / 2), int(h * (1 + 1/scale) / 2))
+
+        # Definir los puntos de la transformación de perspectiva
+        pts1 = np.float32([top_left, top_right, bottom_left, bottom_right])
+        pts2 = np.float32([[0,0], [w,0], [0,h], [w,h]])
+
+        # Calcular la matriz de transformación de perspectiva
+        M = cv2.getPerspectiveTransform(pts1, pts2)
+
+        # Aplicar la transformación de perspectiva al marco
+        frame = cv2.warpPerspective(frame, M, (w, h))
+
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         frame, ratio, (dw, dh) = letterbox(frame, new_shape=(IMG_SIZE, IMG_SIZE))
 #        frame = cv2.resize(frame, (IMG_SIZE, IMG_SIZE))
@@ -232,10 +256,10 @@ if __name__ == '__main__':
 #        img_1 = frame
         img_1 = ori_frame
         if boxes is not None:
-
 #            img_1 = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 #            draw(img_1, boxes, scores, classes)
             draw(img_1, boxes, scores, classes, dw, dh)
+            indicatorImgSize = False
             
             # show FPS in Frame
             #cv2.putText(img_1, show_fps, (7, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (100, 255, 0), 1, cv2.LINE_AA)
@@ -248,6 +272,8 @@ if __name__ == '__main__':
 #            img_1 = cv2.resize(img_1, (800, 800), interpolation=cv2.INTER_LINEAR)
             
             # show output
+        else:
+            indicatorImgSize = True 
         
         
         cv2.imshow("yolov5 post process result", img_1)
