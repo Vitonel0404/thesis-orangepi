@@ -78,29 +78,29 @@ def draw(image, boxes, scores, classes, dw, dh):
                     cv2.FONT_HERSHEY_SIMPLEX,
                     0.6, (0, 0, 255), 2)
 
-def letterbox(im, new_shape=(640, 640), color=(0, 0, 0)):
-    # Resize and pad image while meeting stride-multiple constraints
-    shape = im.shape[:2]  # current shape [height, width]
-    if isinstance(new_shape, int):
-        new_shape = (new_shape, new_shape)
+# def letterbox(im, new_shape=(640, 640), color=(0, 0, 0)):
+#     # Resize and pad image while meeting stride-multiple constraints
+#     shape = im.shape[:2]  # current shape [height, width]
+#     if isinstance(new_shape, int):
+#         new_shape = (new_shape, new_shape)
 
-    # Scale ratio (new / old)
-    r = min(new_shape[0] / shape[0], new_shape[1] / shape[1])
+#     # Scale ratio (new / old)
+#     r = min(new_shape[0] / shape[0], new_shape[1] / shape[1])
 
-    # Compute padding
-    ratio = r, r  # width, height ratios
-    new_unpad = int(round(shape[1] * r)), int(round(shape[0] * r))
-    dw, dh = new_shape[1] - new_unpad[0], new_shape[0] - new_unpad[1]  # wh padding
+#     # Compute padding
+#     ratio = r, r  # width, height ratios
+#     new_unpad = int(round(shape[1] * r)), int(round(shape[0] * r))
+#     dw, dh = new_shape[1] - new_unpad[0], new_shape[0] - new_unpad[1]  # wh padding
 
-    dw /= 2  # divide padding into 2 sides
-    dh /= 2
+#     dw /= 2  # divide padding into 2 sides
+#     dh /= 2
 
-    if shape[::-1] != new_unpad:  # resize
-        im = cv2.resize(im, new_unpad, interpolation=cv2.INTER_LINEAR)
-    top, bottom = int(round(dh - 0.1)), int(round(dh + 0.1))
-    left, right = int(round(dw - 0.1)), int(round(dw + 0.1))
-    im = cv2.copyMakeBorder(im, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color)  # add border
-    return im, ratio, (dw, dh)
+#     if shape[::-1] != new_unpad:  # resize
+#         im = cv2.resize(im, new_unpad, interpolation=cv2.INTER_LINEAR)
+#     top, bottom = int(round(dh - 0.1)), int(round(dh + 0.1))
+#     left, right = int(round(dw - 0.1)), int(round(dw + 0.1))
+#     im = cv2.copyMakeBorder(im, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color)  # add border
+#     return im, ratio, (dw, dh)
 
 def open_cam_usb(dev, width, height):
     # We want to set width and height here, otherwise we could just do:
@@ -138,7 +138,7 @@ if __name__ == '__main__':
     elif host_name == 'RK3588':
         rknn_model = RK3588_RKNN_MODEL
     else:
-        print("This demo cannot run on the current platform: {}".format(host_name))
+        print("El modelo no puede ser ejecutado en la siguiente plataforma: {}".format(host_name))
         exit(-1)
 
     rknn_lite = RKNNLite()
@@ -151,10 +151,6 @@ if __name__ == '__main__':
         exit(ret)
     print('done')
 
-#    ori_img = cv2.imread('./bus.jpg')
-#    img = cv2.cvtColor(ori_img, cv2.COLOR_BGR2RGB)
-
-    # init runtime environment
     print('--> Init runtime environment')
     # run on RK356x/RK3588 with Debian OS, do not need specify target.
     if host_name == 'RK3588':
@@ -189,20 +185,19 @@ if __name__ == '__main__':
         
         if not ret:
             break
-#Debug Webcam Input
-#        cv2.imshow("Original", frame)
+
 #Show FPS in Pic
-        new_frame_time = time.time()
-        show_fps = 1/(new_frame_time-prev_frame_time)
-        prev_frame_time = new_frame_time
-        show_fps = int(show_fps)
-        show_fps = str("{} FPS".format(show_fps))
+        # new_frame_time = time.time()
+        # show_fps = 1/(new_frame_time-prev_frame_time)
+        # prev_frame_time = new_frame_time
+        # show_fps = int(show_fps)
+        # show_fps = str("{} FPS".format(show_fps))
 
         ori_frame = frame
 
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame, ratio, (dw, dh) = letterbox(frame, new_shape=(IMG_SIZE, IMG_SIZE))
-#        frame = cv2.resize(frame, (IMG_SIZE, IMG_SIZE))
+        #frame, ratio, (dw, dh) = letterbox(frame, new_shape=(IMG_SIZE, IMG_SIZE))
+
 
         # Inference
         outputs = rknn_lite.inference(inputs=[frame])
@@ -224,28 +219,15 @@ if __name__ == '__main__':
 #Disable Enable YOLO Post process
         bboxes, classes, scores = yolov5_post_process(input_data)
 
-#        boxes = None
-
-#        img_1 = frame
         img_1 = ori_frame
         
         if bboxes is not None:
-
-#            img_1 = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-#            draw(img_1, boxes, scores, classes)
             draw(img_1, bboxes, scores, classes, dw, dh)
             
-            # show FPS in Frame
-            cv2.putText(img_1, show_fps, (7, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (100, 255, 0), 1, cv2.LINE_AA)
+
+            #cv2.putText(img_1, show_fps, (7, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (100, 255, 0), 1, cv2.LINE_AA)
             
-            #rescale to equal original
-#            old_h, old_w = img_1.shape[:2]
-#            ratio_h, ratio_w = ratio
-#            print(old_h/ratio_h, old_w/ratio_w)
-#            img_1 = cv2.resize(img_1, (int(old_h/ratio_h), int(old_w/ratio_w)), interpolation=cv2.INTER_LINEAR)
-#            img_1 = cv2.resize(img_1, (800, 800), interpolation=cv2.INTER_LINEAR)
-            
-            # show output
+
             
             
         cv2.imshow("yolov5 post process result", img_1)
