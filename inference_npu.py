@@ -259,6 +259,7 @@ if __name__ == '__main__':
 #            img_1 = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 #            draw(img_1, boxes, scores, classes)
             draw(img_1, boxes, scores, classes, dw, dh)
+            playSound()
             indicatorImgSize = False
             
             # show FPS in Frame
