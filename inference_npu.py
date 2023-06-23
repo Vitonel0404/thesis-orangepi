@@ -187,6 +187,7 @@ if __name__ == '__main__':
         
         if bboxes is not None:
             draw(img_1, bboxes, scores, classes, dw, dh)
+            playSound()
                         
         cv2.imshow("yolov5 post process result", img_1)
         key = cv2.waitKey(1) & 0xFF
