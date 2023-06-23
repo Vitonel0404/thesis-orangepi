@@ -7,6 +7,7 @@ import time
 from lib.postprocess import yolov5_post_process, letterbox_reverse_box
 import lib.config as config
 import argparse
+from sound import playSound
 
 
 # construct the argument parse and parse the arguments
