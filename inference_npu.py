@@ -205,8 +205,6 @@ if __name__ == '__main__':
         show_fps = int(show_fps)
         show_fps = str("{} FPS".format(show_fps))
 
-        ori_frame = frame
-
         h, w = frame.shape[:2]
 
         if indicatorImgSize is True:
@@ -226,7 +224,7 @@ if __name__ == '__main__':
 
         # Aplicar la transformación de perspectiva al marco
         frame = cv2.warpPerspective(frame, M, (w, h))
-
+        ori_frame = frame
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         frame, ratio, (dw, dh) = letterbox(frame, new_shape=(IMG_SIZE, IMG_SIZE))
 #        frame = cv2.resize(frame, (IMG_SIZE, IMG_SIZE))
@@ -259,7 +257,9 @@ if __name__ == '__main__':
 #            img_1 = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 #            draw(img_1, boxes, scores, classes)
             draw(img_1, boxes, scores, classes, dw, dh)
-            playSound()
+            if float(scores[0]) >= 0.8:
+                playSound()
+                
             indicatorImgSize = False
             
             # show FPS in Frame
